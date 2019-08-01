@@ -1,0 +1,14 @@
+[Unit]
+Description=jms
+After=network.target mariadb.service redis.service docker.service
+Wants=mariadb.service redis.service docker.service
+
+[Service]
+Type=forking
+Environment="PATH={{ jumpserver_virtualenv_path }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin"
+ExecStart={{ jumpserver_install_path }}/jms start all -d
+ExecReload=
+ExecStop={{ jumpserver_install_path }}/jms stop
+
+[Install]
+WantedBy=multi-user.target

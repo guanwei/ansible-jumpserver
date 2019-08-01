@@ -1,0 +1,14 @@
+---
+- name: Restart Jumpserver
+  systemd:
+    name: jms
+    state: restarted
+    daemon_reload: true
+  become: true
+
+- name: Restart Nginx
+  systemd:
+    name: nginx
+    state: restarted
+    daemon_reload: true
+  become: true

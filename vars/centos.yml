@@ -1,0 +1,32 @@
+---
+basic_dependencies:
+  - wget
+  - gcc
+  - epel-release
+  - git
+
+redis_packages:
+  - redis
+
+mariadb_packages:
+  - mariadb
+  - mariadb-devel
+  - mariadb-server
+  - MySQL-python
+
+python3_packages:
+  - python36
+  - python36-devel
+  - python36-pip
+  - python36-virtualenv
+
+docker_dependencies:
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2
+
+docker_packages:
+  - docker-ce
+
+nginx_packages:
+  - nginx

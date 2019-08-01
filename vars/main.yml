@@ -1,0 +1,4 @@
+---
+jumpserver_install_path: /opt/jumpserver
+jumpserver_virtualenv_path: /opt/py3
+luna_install_path: /opt/luna

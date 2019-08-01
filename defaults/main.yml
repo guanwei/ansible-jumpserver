@@ -1,0 +1,14 @@
+---
+mariadb_root_password: ''
+jumpserver_db_name: jumpserver
+jumpserver_db_user: jumpserver
+jumpserver_db_password: jumpserver
+
+secret_key: 'zmJi58sPzJPVYNBi9ojZqsETVskYguAHRcKYvuIQYJJdvPBggL'
+bootstrap_token: 'wCZotF5vTKsTT1rC'
+
+docker_registry_mirror: https://registry.docker-cn.com
+jms_koko_image: jumpserver/jms_koko:1.5.2
+jms_guacamole_image: jumpserver/jms_guacamole:1.5.2
+
+luna_version: 1.5.2

@@ -1,0 +1,51 @@
+---
+- name: Add wandisco-git repo
+  yum_repository:
+    name: wandisco-git
+    description: WANdisco Distribution of git
+    baseurl: http://opensource.wandisco.com/centos/$releasever/git/$basearch
+    enabled: 1
+    gpgcheck: 1
+    gpgkey: http://opensource.wandisco.com/RPM-GPG-KEY-WANdisco
+  become: true
+
+- name: Add Docker repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docer-ce.repo
+    owner: root
+    group: root
+    mode: 0644
+  register: _download_repo
+  until: _download_repo is succeeded
+  retries: 3
+  delay: 2
+  become: true
+
+- name: Add Nginx repo
+  yum_repository:
+    name: nginx
+    description: nginx stable repo
+    baseurl: http://nginx.org/packages/centos/$releasever/$basearch
+    enabled: 1
+    gpgcheck: 1
+    gpgkey: https://nginx.org/keys/nginx_signing.key
+  become: true
+
+- import_tasks: prepare.yml
+  become: true
+
+- import_tasks: install_jumpserver.yml
+  become: true
+
+- import_tasks: configure_jumpserver.yml
+  become: true
+
+- import_tasks: install_coco_guacamole.yml
+  become: true
+
+- import_tasks: install_luna.yml
+  become: true
+
+- import_tasks: install_nginx.yml
+  become: true

@@ -1,0 +1,14 @@
+---
+- name: Install Luna
+  unarchive:
+    src: "https://github.com/jumpserver/luna/releases/download/{{ luna_version }}/luna.tar.gz"
+    dest: "{{ luna_install_path }}"
+    extra_opts:
+      - --strip-components=1
+    remote_src: yes
+    owner: root
+    group: root
+  register: _install_luna
+  until: _install_luna is success
+  retries: 3
+  delay: 2

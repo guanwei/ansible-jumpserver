@@ -1,0 +1,66 @@
+---
+- name: Install Docker dependencies
+  package:
+    name: "{{ package }}"
+    state: present
+  register: _install_dep_packages
+  until: _install_dep_packages is success
+  retries: 3
+  delay: 2
+  with_items: "{{ docker_dependencies }}"
+  loop_control:
+    loop_var: package
+
+- name: Install Docker
+  package:
+    name: "{{ package }}"
+    state: present
+  with_items: "{{ docker_packages }}"
+  loop_control:
+    loop_var: package
+  register: _install_docker
+  until: _install_docker is success
+  retries: 3
+  delay: 2
+
+- name: Install Docker module for python
+  pip:
+    name: docker
+
+- name: Copy Docker config file
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Restart Docker and ensure enabled on boot
+  service:
+    name: docker
+    state: restarted
+    daemon_reload: true
+    enabled: yes
+
+- name: Start a jms_koko container
+  docker_container:
+    name: jms_koko
+    image: "{{ jms_koko_image }}"
+    ports:
+     - "2222:2222"
+     - "127.0.0.1:5000:5000"
+    env:
+      CORE_HOST: "http://{{ ansible_default_ipv4.address }}:8080"
+      BOOTSTRAP_TOKEN: "{{ bootstrap_token }}"
+    restart_policy: always
+
+- name: Start a jms_guacamole container
+  docker_container:
+    name: jms_guacamole
+    image: "{{ jms_guacamole_image }}"
+    ports:
+     - "127.0.0.1:8081:8081"
+    env:
+      JUMPSERVER_SERVER: "http://{{ ansible_default_ipv4.address }}:8080"
+      BOOTSTRAP_TOKEN: "{{ bootstrap_token }}"
+    restart_policy: always

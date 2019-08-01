@@ -1,0 +1,99 @@
+---
+- name: Set SECRET_KEY in ~/.bashrc
+  lineinfile:
+    dest: "{{ ansible_env.HOME }}/.bashrc"
+    regexp: "^SECRET_KEY="
+    line: "SECRET_KEY={{ secret_key }}"
+    insertafter: EOF
+
+- name: Set BOOTSTRAP_TOKEN in ~/.bashrc
+  lineinfile:
+    dest: "{{ ansible_env.HOME }}/.bashrc"
+    regexp: "^BOOTSTRAP_TOKEN="
+    line: "BOOTSTRAP_TOKEN={{ bootstrap_token }}"
+    insertafter: EOF
+
+- name: Create Jumpserver tmp config file
+  copy:
+    src: "{{ jumpserver_install_path }}/config_example.yml"
+    dest: "{{ jumpserver_install_path }}/config.yml.tmp"
+    remote_src: yes
+
+- name: Set SECRET_KEY in Jumpserver tmp config file
+  lineinfile:
+    dest: "{{ jumpserver_install_path }}/config.yml.tmp"
+    regexp: "^SECRET_KEY:"
+    line: "SECRET_KEY: {{ secret_key }}"
+
+- name: Set BOOTSTRAP_TOKEN in Jumpserver tmp config file
+  lineinfile:
+    dest: "{{ jumpserver_install_path }}/config.yml.tmp"
+    regexp: "^BOOTSTRAP_TOKEN:"
+    line: "BOOTSTRAP_TOKEN: {{ bootstrap_token }}"
+
+- name: Set DEBUG in Jumpserver tmp config file
+  lineinfile:
+    dest: "{{ jumpserver_install_path }}/config.yml.tmp"
+    regexp: "^# DEBUG:"
+    line: "DEBUG: false"
+
+- name: Set LOG_LEVEL in Jumpserver tmp config file
+  lineinfile:
+    dest: "{{ jumpserver_install_path }}/config.yml.tmp"
+    regexp: "^# LOG_LEVEL:"
+    line: "LOG_LEVEL: ERROR"
+
+- name: Set SESSION_EXPIRE_AT_BROWSER_CLOSE in Jumpserver tmp config file
+  lineinfile:
+    dest: "{{ jumpserver_install_path }}/config.yml.tmp"
+    regexp: "^# SESSION_EXPIRE_AT_BROWSER_CLOSE:"
+    line: "SESSION_EXPIRE_AT_BROWSER_CLOSE: true"
+
+- name: Set DB_NAME in Jumpserver tmp config file
+  lineinfile:
+    dest: "{{ jumpserver_install_path }}/config.yml.tmp"
+    regexp: "^DB_NAME:"
+    line: "DB_NAME: {{ jumpserver_db_name }}"
+
+- name: Set DB_USER in Jumpserver tmp config file
+  lineinfile:
+    dest: "{{ jumpserver_install_path }}/config.yml.tmp"
+    regexp: "^DB_USER:"
+    line: "DB_USER: {{ jumpserver_db_user }}"
+
+- name: Set DB_PASSWORD in Jumpserver tmp config file
+  lineinfile:
+    dest: "{{ jumpserver_install_path }}/config.yml.tmp"
+    regexp: "^DB_PASSWORD:"
+    line: "DB_PASSWORD: {{ jumpserver_db_password }}"
+
+- name: Create Jumpserver config file
+  copy:
+    src: "{{ jumpserver_install_path }}/config.yml.tmp"
+    dest: "{{ jumpserver_install_path }}/config.yml"
+    owner: root
+    group: root
+    mode: 0644
+    remote_src: yes
+  notify: Restart Jumpserver
+
+- name: Remove Jumpserver tmp config file
+  file:
+    path: "{{ jumpserver_install_path }}/config.yml.tmp"
+    state: absent
+
+- name: Copy the Jumpserver systemd service file
+  template:
+    src: jms.service.j2
+    dest: /usr/lib/systemd/system/jms.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart Jumpserver
+
+- name: Ensure Jumpserver is started and enabled on boot
+  service:
+    name: jms
+    state: started
+    daemon_reload: true
+    enabled: yes
