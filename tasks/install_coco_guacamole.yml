@@ -27,6 +27,12 @@
   pip:
     name: docker
 
+- name: Ensure /etc/docker dir exists
+  file:
+    path: /etc/docker
+    recurse: yes
+    state: directory
+
 - name: Copy Docker config file
   template:
     src: daemon.json.j2
