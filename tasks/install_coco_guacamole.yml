@@ -40,6 +40,7 @@
     owner: root
     group: root
     mode: 0644
+  register: _docker_config_file
 
 - name: Restart Docker and ensure enabled on boot
   service:
@@ -47,6 +48,7 @@
     state: restarted
     daemon_reload: true
     enabled: yes
+  when: _docker_config_file.changed
 
 - name: Start a jms_koko container
   docker_container:
