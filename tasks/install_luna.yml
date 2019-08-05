@@ -1,4 +1,10 @@
 ---
+- name: Ensure {{ luna_install_path }} dir exists
+  file:
+    path: "{{ luna_install_path }}"
+    recurse: yes
+    state: directory
+
 - name: Install Luna
   unarchive:
     src: "https://github.com/jumpserver/luna/releases/download/{{ luna_version }}/luna.tar.gz"
