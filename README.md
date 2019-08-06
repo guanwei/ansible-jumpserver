@@ -1,4 +1,4 @@
-# Ansible Role: Docker
+# Ansible Role: Jumpserver
 
 An Ansible Role that installs [Jumpserver](http://www.jumpserver.org/) on Linux.
 
